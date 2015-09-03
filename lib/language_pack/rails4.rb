@@ -79,8 +79,19 @@ WARNING
 
         topic("Preparing app for Rails asset pipeline")
 
-        @cache.load_without_overwrite public_assets_folder
-        @cache.load default_assets_cache
+        time = Benchmark.realtime do
+          @cache.load_without_overwrite public_assets_folder
+        end
+        puts "#{public_assets_folder} cache loaded in #{time} seconds."
+
+        time = Benchmark.realtime do
+          @cache.load default_assets_cache
+        end
+        puts "#{default_assets_cache} cache loaded in #{time} seconds."
+
+        [public_assets_folder, default_assets_cache].each do |dir|
+          puts %x(du -sh #{dir})
+        end
 
         precompile.invoke(env: rake_env)
 
